@@ -101,7 +101,7 @@ export const STAGES = [
   { ch: 6, name: '설원 3연전', kind: 'gauntlet', foes: [F('grunt', 'shadow_panther'), F('grunt', 'venom_viper'), F('grunt', 'thunder_wolf', { lv: 1 })] },
   { ch: 6, name: '라이벌 4번째', kind: 'rival', foes: [F('hanbyeol', 'thunder_wolf', { lv: 2, star: 3 })], pre: 'rival4_pre', post: 'rival4_post' },
   { ch: 6, name: '빙하 거대 팽이', kind: 'giant', foes: [F('giant', 'frost_unicorn', { scale: 1.75, hpMul: 3.6, atkMul: 0.95 })] },
-  { ch: 6, name: '설산의 은둔자', kind: 'boss', foes: [F('baekya', 'luna_owl', { lv: 3, star: 2, scale: 1.12 })], pre: 'boss6_pre', post: 'boss6_post' },
+  { ch: 6, name: '설산의 은둔자', kind: 'boss', foes: [F('baekya', 'luna_owl', { lv: 2, star: 1, scale: 1.12 })], pre: 'boss6_pre', post: 'boss6_post' },
   // ── 7장 하늘 경기장 ──
   { ch: 7, name: '그랑프리 1회전', kind: 'duel', foes: [F('jia', 'frost_unicorn', { lv: 1, star: 2 })], pre: 'ch7_intro' },
   { ch: 7, name: '그랑프리 2회전', kind: 'duel', foes: [F('marin', 'tidal_shark', { lv: 1, star: 2 })] },
@@ -115,7 +115,7 @@ export const STAGES = [
   { ch: 8, name: '조종당한 지아', kind: 'tag', allies: [F('hanbyeol', 'thunder_wolf', { lv: 0, star: 3 })], foes: [F('jia', 'frost_unicorn', { lv: 1, star: 3, dark: true }), F('grunt', 'shadow_panther')], pre: 's8_2' },
   { ch: 8, name: '조종당한 마린과 루나', kind: 'tag', allies: [F('dusik', 'stone_golem', { lv: 0, star: 3 })], foes: [F('marin', 'tidal_shark', { lv: 1, star: 3, dark: true }), F('luna', 'sakura_fox', { lv: 1, star: 3, dark: true })], pre: 's8_3' },
   { ch: 8, name: '흑회전단 총공격', kind: 'royale', foes: [F('grunt', 'shadow_panther', { lv: 1 }), F('grunt', 'venom_viper', { lv: 1 }), F('grunt', 'chaos_demon', { lv: -4 })] },
-  { ch: 8, name: '조종당한 고수들', kind: 'tag', allies: [F('leo', 'golden_lion', { lv: 0, star: 3 })], foes: [F('magma', 'iron_rhino', { lv: 1, star: 3, dark: true }), F('baekya', 'luna_owl', { lv: 1, star: 3, dark: true })], pre: 's8_5' },
+  { ch: 8, name: '조종당한 고수들', kind: 'tag', allies: [F('leo', 'golden_lion', { lv: 0, star: 3 })], foes: [F('magma', 'iron_rhino', { lv: 0, star: 2, dark: true }), F('baekya', 'luna_owl', { lv: 0, star: 2, dark: true })], pre: 's8_5' },
   { ch: 8, name: '혼돈의 거대 석상', kind: 'giant', foes: [F('giant', 'chaos_demon', { scale: 1.85, hpMul: 3.8, atkMul: 0.85 })] },
   { ch: 8, name: '봉인의 문', kind: 'duel', foes: [F('grunt', 'solar_phoenix', { lv: 2, star: 2 })], pre: 'seal_quiz' },
   { ch: 8, name: '최종 결전: 카오스', kind: 'boss', final: true, foes: [F('chaos', 'chaos_demon', { lv: 5, star: 4, scale: 1.2 })], pre: 'final_pre', post: 'ending' },

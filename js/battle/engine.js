@@ -16,7 +16,7 @@ export function typeMul(a, b) {
 const AXIS = {
   atk: { drive: 230, center: 1.25, damp: 0.75, grip: 0.9, jitter: 50, petal: 1.15, pf: 2.6 },
   def: { drive: 60, center: 2.2, damp: 1.2, grip: 1.6, jitter: 20, petal: 0.3, pf: 1.5 },
-  sta: { drive: 50, center: 2.6, damp: 0.85, grip: 1.55, jitter: 15, petal: 0.2, pf: 1.2 },
+  sta: { drive: 50, center: 2.6, damp: 0.85, grip: 1.85, jitter: 15, petal: 0.2, pf: 1.2 },
   bal: { drive: 115, center: 1.8, damp: 0.8, grip: 1.15, jitter: 35, petal: 0.75, pf: 2.0 },
 };
 
