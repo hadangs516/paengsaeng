@@ -41,6 +41,8 @@ export function openSettings() {
       btn('지금 저장', 'green small', () => { Save.save(); toast('저장 완료!', 'good'); }),
       btn('기록 옮기기', 'small', () => openBackup()),
       btn('업데이트 기록', 'small ghost', () => openHistory()),
+      btn('조작법', 'small ghost', () => openHelp()),
+      window.__installPrompt ? btn('홈 화면에 추가', 'small purple', () => { window.__installPrompt.prompt(); window.__installPrompt = null; }) : null,
       btn('처음부터 하기', 'red small', async () => {
         if (!(await confirmBox('모든 진행 기록이 지워지고 **되돌릴 수 없어.**\n정말 처음부터 할까?', '처음부터', '돌아가기', 'red'))) return;
         Save.reset(); location.reload();
@@ -63,6 +65,19 @@ function openBackup() {
       if (Save.importCode(inp.value)) { toast('불러오기 완료!', 'good'); setTimeout(() => location.reload(), 600); }
       else { toast('코드가 올바르지 않아', 'warn'); return false; }
     } }] });
+}
+
+export function openHelp() {
+  const row = (k, v) => h('div.help-row', h('b', k), h('span', { html: rich(v) }));
+  const pc = document.body.classList.contains('pc');
+  modal({ title: '조작법', color: 'blue', closable: true, body: h('div.help',
+    row('발사', pc ? '원이 노란 원에 겹칠 때 **Space** 또는 클릭' : '원이 노란 원에 겹칠 때 **화면 탭**'),
+    row('이동', pc ? '**WASD / 방향키** 또는 마우스 드래그' : '화면 아무 곳이나 **드래그**'),
+    row('대시', pc ? '**Space** 또는 대시 버튼' : '**대시** 버튼'),
+    row('필살기', pc ? '게이지가 차면 **E** 또는 필살기 버튼' : '게이지가 차면 **필살기** 버튼'),
+    row('승리', '상대 체력 0, 또는 **OUT 구멍**으로 날려 보내기'),
+    row('상성', '**공격 > 지구 > 방어 > 공격**')),
+    buttons: [{ label: '확인', cls: 'yellow' }] });
 }
 
 function openHistory() {

@@ -24,6 +24,9 @@ export function runBattle(cfg) {
   });
 }
 
+// 카드에는 짧은 이름 (골목대장 두식 → 두식)
+const shortName = (n) => { const p = String(n).split(' '); return p.length > 1 && p[p.length - 1].length >= 2 ? p[p.length - 1] : n; };
+
 class BattleScene {
   constructor(cfg, resolve) {
     this.cfg = cfg;
@@ -156,7 +159,7 @@ class BattleScene {
       const card = h('div.bcard' + (right ? '.right' : '') + (t.ally ? '.ally' : ''),
         h('div.bface', face),
         h('div.binfo',
-          h('div.bname', h('span', t.trainer || t.name), h('i.tdot', { style: { background: TYPES[t.type].color } })),
+          h('div.bname', h('span', shortName(t.trainer || t.name)), h('i.tdot', { style: { background: TYPES[t.type].color } })),
           h('div.hpbar', h('i.ghost'), h('i.fill'), h('span.hpnum')),
           h('div.gbar', h('i'))));
       t._card = card;
@@ -170,7 +173,7 @@ class BattleScene {
     this.cards.classList.toggle('multi', foes.length > 1 || mine.length > 1);
     // 가운데: 타이머 / 점수
     this.center.innerHTML = '';
-    this.timerEl = h('div.btimer', h('svg', { viewBox: '0 0 44 44', html: '<circle cx="22" cy="22" r="18" class="bg"/><circle cx="22" cy="22" r="18" class="fg"/>' }));
+    this.timerEl = h('div.btimer', { html: '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" class="bg"/><circle cx="22" cy="22" r="18" class="fg"/></svg>' });
     this.center.append(this.timerEl);
     if (this.cfg.points) {
       const pips = (side) => h('div.pips' + (side === 'e' ? '.e' : ''), Array.from({ length: this.cfg.points }, (_, i) => h('i' + (i < this.score[side] ? '.on' : ''))));

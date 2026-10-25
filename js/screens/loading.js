@@ -58,6 +58,7 @@ registerScreen('loading', () => {
       Audio.unlock();
       Audio.setVolumes(Save.settings.bgm, Save.settings.sfx);
       Audio.sfx('go');
+      Audio.playBgm(Save.state && Save.state.flags.starter ? 'hub' : 'map');
       if (!Save.settings.device) go('device', {}, 'fade');
       else if (!Save.state || !Save.state.flags.starter) go('intro', {}, 'fade');
       else go('home', {}, 'fade');

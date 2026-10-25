@@ -69,7 +69,7 @@ export class Battle {
     const ang = (n === 2 ? (i === 0 ? Math.PI / 2 : -Math.PI / 2 + rand(-0.7, 0.7)) : (i / n) * TAU + Math.PI / 2) + (i === 0 ? 0 : this.startOff);
     const dist = R * 0.72;
     const launchMul = [0.85, 1.0, 1.1, 1.22][d.launch ?? 1];
-    const r = 40 * (d.scale || 1);
+    const r = 46 * (d.scale || 1);
     const ax = AXIS[d.axis || d.type] || AXIS.bal;
     const t = {
       ...d, i,

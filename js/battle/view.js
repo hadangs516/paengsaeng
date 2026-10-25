@@ -404,7 +404,7 @@ export class BattleView {
   drawTop(g, t, b) {
     if (t.burstHidden) return;
     const ratio = clamp(t.hp / t.maxHp, 0, 1);
-    const size = t.r * 2.3;
+    const size = t.r * 2.25;
     const im = t.dark ? darkTop(t.id) : IMG['top:' + t.id];
     const blur = spinBlur(t.id);
     g.save();

@@ -20,6 +20,9 @@ document.addEventListener('contextmenu', (e) => e.preventDefault());
 document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
+// 홈 화면에 추가 (지원 브라우저만)
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); window.__installPrompt = e; });
+
 // 첫 터치에 오디오 켜기
 const unlock = () => { Audio.unlock(); Audio.setVolumes(Save.settings.bgm, Save.settings.sfx); };
 window.addEventListener('pointerdown', unlock, { capture: true });

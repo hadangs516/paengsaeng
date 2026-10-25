@@ -15,6 +15,7 @@ import { buildChallengeTab } from './tab_challenge.js';
 import { openSettings } from './settings.js';
 import { openMissions, openAttendance, openRoulette } from './popups.js';
 import { playRaid } from './raid.js';
+import { stageConfig } from '../flow.js';
 
 const TABS = [
   { key: 'home', label: '홈', icon: 'tab_home' },
@@ -141,6 +142,17 @@ function buildHomeTab(bar, switchTab) {
     h('div.center', starsEl(G.topStar(main))),
     h('div.sc-cp', h('span.sc-cplabel', '전투력'), cpEl),
     h('div.sc-lv', 'Lv.' + G.topLv(main)));
+  // 다음 스테이지보다 약하면 강화하라고 알려준다
+  const hint = h('button.cp-hint.hidden', { onclick: () => { Audio.sfx('click'); switchTab(G.unlocked('upgrade') ? 'tops' : 'tops'); } });
+  const updHint = () => {
+    if (st.progress >= STAGES.length) { hint.classList.add('hidden'); return; }
+    const rec = stageConfig(st.progress).recCp, my = G.topCP(Save.state.main);
+    hint.classList.toggle('hidden', my >= rec * 0.95);
+    hint.innerHTML = '';
+    hint.append('다음 상대 추천 전투력 ', h('b', rec.toLocaleString('ko-KR')), ' · 레벨업하러 가기');
+  };
+  updHint();
+  info.append(hint);
 
   // 훈련장 말풍선
   const idle = h('button.idlebub');
@@ -177,7 +189,7 @@ function buildHomeTab(bar, switchTab) {
     h('div.adv-go.display.stroke-s', '모험'));
 
   el.append(leftCol, rightCol, h('div.homecenter', idle, showcase, info), raidBanner, h('div.homebottom', adv));
-  const off = G.bus.on('top', () => { cpEl.textContent = G.topCP(Save.state.main).toLocaleString('ko-KR'); });
+  const off = G.bus.on('top', () => { cpEl.textContent = G.topCP(Save.state.main).toLocaleString('ko-KR'); updHint(); });
   const off2 = G.bus.on('mission', refreshSide);
   el._cleanup = () => { clearInterval(idleTimer); off(); off2(); };
   return el;
@@ -200,6 +212,13 @@ async function afterEnter(params, bar) {
       await sleep(400);
       toast(txt, 'good');
     }
+  }
+  // 홈 화면에 추가 안내 (한 번만, 지원 브라우저만)
+  if (params.fromTutorial && window.__installPrompt && !st.flags.installAsked) {
+    st.flags.installAsked = true;
+    await sleep(900);
+    modal({ title: '홈 화면에 추가', color: 'blue', body: h('div.center', { style: { font: '700 15px/1.6 var(--f-body)', color: 'var(--sub)' }, html: rich('홈 화면에 추가하면 **앱처럼 바로** 들어올 수 있어!') }),
+      buttons: [{ label: '나중에', cls: 'ghost' }, { label: '추가하기', cls: 'yellow', onClick: () => { const p = window.__installPrompt; window.__installPrompt = null; if (p) p.prompt(); } }] });
   }
   // 습격 이벤트: 4장 이후, 가끔 등장 (10분 동안)
   if (st.progress >= 28 && st.raid.until < Date.now() && st.raid.nextAt < Date.now() && Math.random() < 0.35) {

@@ -408,3 +408,13 @@
 .end-clear { font-size: 70px; color: #ffd23f; animation: popIn .8s .5s cubic-bezier(.2,1.6,.4,1) both; }
 .end-txt { font: 700 16px/1.6 var(--f-body); white-space: pre-line; }
 .end-txt b { color: var(--yellow); }
+
+/* 조작법 */
+.help { display: flex; flex-direction: column; gap: 8px; }
+.help-row { display: grid; grid-template-columns: 58px 1fr; gap: 10px; align-items: center; padding: 10px; border-radius: 12px; background: rgba(8,12,34,.55); font: 700 14px/1.45 var(--f-body); }
+.help-row b { font: 400 16px/1 var(--f-display); color: var(--yellow); }
+.help-row span b { font: 800 14px/1 var(--f-body); color: var(--yellow); }
+
+/* 전투력 부족 힌트 */
+.cp-hint { margin-top: 6px; padding: 6px 12px; border-radius: 12px; background: rgba(208,36,62,.85); border: 2px solid var(--line); font: 800 12px/1.3 var(--f-body); text-align: center; animation: bob 1.6s ease-in-out infinite; }
+.cp-hint b { font: 400 14px/1 var(--f-display); color: #fff2a0; }
