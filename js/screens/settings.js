@@ -5,6 +5,7 @@ import { Save, VERSION } from '../core/save.js';
 import { Audio } from '../core/audio.js';
 
 const HISTORY = [
+  ['v1.0.1', '경기장 9종 그림 추가, 버그 수정, 작은 화면 최적화'],
   ['v1.0.0', '팽생역전 첫 공개! 8장 스토리, 19종 팽이, 무한의 탑, 친구 대전'],
 ];
 
@@ -38,7 +39,7 @@ export function openSettings() {
     toggle('진동', () => s.vib, (v) => { s.vib = v; }),
     devRow,
     h('div.set-grid',
-      btn('지금 저장', 'green small', () => { Save.save(); toast('저장 완료!', 'good'); }),
+      btn('지금 저장', 'green small', () => { if (Save.save()) toast('저장 완료!', 'good'); else toast('이 브라우저는 저장이 막혀 있어. **기록 옮기기** 코드를 꼭 복사해 둬!', 'warn'); }),
       btn('기록 옮기기', 'small', () => openBackup()),
       btn('업데이트 기록', 'small ghost', () => openHistory()),
       btn('조작법', 'small ghost', () => openHelp()),

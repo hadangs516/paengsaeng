@@ -89,6 +89,7 @@ export function updateVersionPos() {
 
 // ───────── 팝업 ─────────
 export function modal({ title, color = '', body, buttons = [], closable = false, onClose, cls = '' }) {
+  try { document.activeElement && document.activeElement.blur && document.activeElement.blur(); } catch (e) {}
   const root = $('#modal-root');
   const wrap = h('div.modal-wrap');
   const foot = h('div.modal-foot');

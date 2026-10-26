@@ -11,6 +11,11 @@ import { stageCoins } from '../data/balance.js';
 import * as G from '../game.js';
 
 export async function playRaid(bar) {
+  if (window.__playing) return;
+  window.__playing = true;
+  try { await playRaidInner(bar); } finally { window.__playing = false; }
+}
+async function playRaidInner(bar) {
   const st = Save.state;
   if (!(st.raid.until > Date.now())) { toast('습격이 끝났어'); return; }
   const idx = Math.min(st.progress, 61);

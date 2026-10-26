@@ -215,6 +215,14 @@ async function afterEnter(params, bar) {
   }
   // 엔딩을 못 보고 꺼졌으면 다시 보여준다
   if (st.flags.ending && !st.flags.endingSeen) { setTimeout(() => go('adventure', {}, 'fade'), 300); return; }
+  if (window.__noStorage && !window.__warnedStorage) { window.__warnedStorage = true; setTimeout(() => toast('이 브라우저는 저장이 막혀 있어. 설정 → **기록 옮기기** 코드를 복사해 둬!', 'warn'), 600); }
+  // 아이폰: 홈 화면에 추가해 두면 앱처럼 열리고 기록도 오래 남는다 (한 번만)
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone;
+  if (params.fromTutorial && ios && !st.flags.iosTip) {
+    st.flags.iosTip = true;
+    await sleep(900);
+    modal({ title: '아이폰 꿀팁', color: 'blue', body: h('div.center', { style: { font: '700 15px/1.6 var(--f-body)', color: 'var(--sub)', whiteSpace: 'pre-line', wordBreak: 'keep-all' }, html: rich('아래 **공유 버튼 → 홈 화면에 추가** 하면 앱처럼 바로 들어올 수 있어!\n오래 안 들어오면 기록이 지워질 수 있으니 가끔 **설정 → 기록 옮기기** 코드도 복사해 둬.') }), buttons: [{ label: '확인', cls: 'yellow' }] });
+  }
   // 홈 화면에 추가 안내 (한 번만, 지원 브라우저만)
   if (params.fromTutorial && window.__installPrompt && !st.flags.installAsked) {
     st.flags.installAsked = true;

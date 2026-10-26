@@ -516,7 +516,7 @@ export class BattleView {
         g.fillStyle = hexA(p.col, k * 0.8);
         g.beginPath(); g.arc(p.x, p.y, p.r * k, 0, TAU); g.fill();
       } else if (p.k === 'plus') {
-        g.fillStyle = `rgba(140,255,170,${k})`; g.font = '900 20px Pretendard'; g.textAlign = 'center'; g.fillText('+', p.x, p.y);
+        g.fillStyle = `rgba(140,255,170,${k})`; g.font = '900 20px "Pretendard Variable", sans-serif'; g.textAlign = 'center'; g.fillText('+', p.x, p.y);
       }
     }
     g.globalCompositeOperation = 'source-over';

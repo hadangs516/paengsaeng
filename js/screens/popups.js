@@ -43,6 +43,7 @@ export function openMissions(bar, onDone) {
         h('div.mr-rw', icon('gem'), h('span', '+' + d.gems)),
         claimed ? h('div.stamp.static', '수령 완료') : h('button.btn.small' + (done ? '.green' : '.gray'), { onclick: (e) => {
           if (!done) { deny(e.currentTarget, '아직 덜 했어!'); return; }
+          if (Save.state.missions.claimed[d.key] || Save.state.missions !== m) { render(); return; }
           m.claimed[d.key] = true; Save.touch();
           claimFx(row, d.gems);
           e.currentTarget.remove();
@@ -56,6 +57,7 @@ export function openMissions(bar, onDone) {
       h('div.mr-info', h('b', '오늘 미션 모두 완료'), h('small', '보석 ' + G.DAILY_BONUS + ' + 부품 1개')),
       m.bonus ? h('div.stamp.static', '수령 완료') : h('button.btn.small' + (allClaimed ? '.yellow' : '.gray'), { onclick: (e) => {
         if (!allClaimed) { deny(e.currentTarget, '미션을 모두 받아야 열려!'); return; }
+        if (Save.state.missions.bonus || Save.state.missions !== m) { render(); return; }
         m.bonus = true; const p = G.genPart(Math.max(2, G.rollPartRarity(1)));
         claimFx(bonus, G.DAILY_BONUS); toast(`**${p.name}** 획득!`, 'good');
         e.currentTarget.remove(); setTimeout(render, 900);
@@ -74,6 +76,8 @@ export function openMissions(bar, onDone) {
         s.complete ? h('div.stamp.static', '모두 완료') : h('div.mr-rw', icon('gem'), h('span', '+' + s.gems)),
         s.complete ? null : h('button.btn.small' + (s.ready ? '.green' : '.gray'), { onclick: (e) => {
           if (!s.ready) { deny(e.currentTarget, '아직 목표에 못 미쳤어!'); return; }
+          const now = G.achState(a);
+          if (now.done !== s.done || !now.ready) { render(); return; }
           Save.state.ach[a.key] = s.done + 1; Save.touch();
           claimFx(row, s.gems); e.currentTarget.remove(); setTimeout(render, 900);
         } }, s.ready ? '받기' : '진행중'));

@@ -29,7 +29,7 @@ export const Audio = {
   get ready() { return !!ctx; },
 
   unlock() {
-    if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+    if (ctx) { if (ctx.state !== 'running' && ctx.state !== 'closed') ctx.resume().catch(() => {}); return; }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
     ctx = new AC({ latencyHint: 'interactive' });
@@ -68,7 +68,7 @@ export const Audio = {
   },
 
   // 탭이 숨겨지면 소리 끄기
-  setMuted(m) { muted = m; this.setVolumes(bgmVol, sfxVol); if (ctx) { if (m) ctx.suspend(); else ctx.resume(); } },
+  setMuted(m) { muted = m; this.setVolumes(bgmVol, sfxVol); if (ctx) { if (m) ctx.suspend().catch(() => {}); else if (ctx.state !== 'closed') ctx.resume().catch(() => {}); } },
 
   playBgm(name) {
     if (!ctx) { pendingSong = name; return; }

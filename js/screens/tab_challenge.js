@@ -42,6 +42,11 @@ export function buildChallengeTab(bar) {
   return el;
 
   async function playTower() {
+    if (window.__playing) return;
+    window.__playing = true;
+    try { await playTowerInner(); } finally { window.__playing = false; }
+  }
+  async function playTowerInner() {
     const floor = Save.state.tower.floor;
     const cfg = towerConfig(floor);
     const res = await runBattle(cfg);
@@ -103,6 +108,11 @@ function enterCode() {
     } }] });
 }
 async function friendBattle(d) {
+  if (window.__playing) return;
+  window.__playing = true;
+  try { await friendBattleInner(d); } finally { window.__playing = false; }
+}
+async function friendBattleInner(d) {
   const t = TOPS[d.t];
   const foe = { id: d.t, name: t.name, type: t.type, axis: d.x || t.type, skill: t.skill, atk: d.s[0], def: d.s[1], hp: d.s[2], spd: d.s[3], crit: d.s[4], char: null, trainer: d.n };
   const res = await runBattle({ mode: 'friend', kind: 'boss', points: 3, title: `${d.n}의 ${t.name}`, stadium: 'st_city', bg: 'bg_city', mods: {}, player: playerUnit(), allies: [], foes: [foe], timeLimit: 45, aiLevel: 0.75, recCp: combatPower(foe), myCp: G.topCP(Save.state.main) });

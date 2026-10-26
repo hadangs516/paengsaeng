@@ -89,7 +89,8 @@ function starterSelect(el) {
   let sel = null;
   const detail = h('div.st-detail');
   const confirm = btn('이 팽이로 할래!', 'yellow big wide', async () => {
-    if (!sel) return;
+    if (!sel || confirm._used) return;
+    confirm._used = true; confirm.blur();
     G.addTop(sel); G.addTop('basic_top');
     Save.state.main = sel;
     Save.state.flags.starter = true;

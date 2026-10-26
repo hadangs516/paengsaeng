@@ -245,7 +245,7 @@ class BattleScene {
     this.phase = 'fight';
     this.fightStart = performance.now();
     if (this.cfg.tutorial && this.round === 0) {
-      setTimeout(() => this.showTip('왼쪽을 드래그해서 **팽이를 조종!**', 3500), 600);
+      setTimeout(() => this.showTip('화면을 드래그해서 **팽이를 조종!**', 3500), 600);
       setTimeout(() => this.showTip('**대시**로 들이받고, 게이지가 차면 **필살기!**', 4000), 4600);
     }
     this.launchRes && this.launchRes();
@@ -302,11 +302,12 @@ class BattleScene {
     press(this.speedBtn, () => { this.speed = this.speed > 1 ? 1 : 2; this.speedBtn.textContent = this.speed > 1 ? 'x2' : 'x1'; this.speedBtn.classList.toggle('on', this.speed > 1); Save.settings.speed = this.speed; Save.saveSettings(); Audio.sfx('tab'); });
     press(this.pauseBtn, () => this.pause());
     this.onKey = (e) => {
-      const k = e.key.toLowerCase();
+      const k = e.code || e.key;
       if (e.type === 'keydown') {
-        if (k === ' ' || k === 'spacebar') { e.preventDefault(); if (this.phase === 'launch') this.judgeLaunch(false); else this.doDash(); }
-        if (k === 'e' || k === 'shift' || k === 'ㄷ') this.doSkill();
-        if (k === 'escape' || k === 'p') this.pause();
+        if (k === 'Enter' || k === 'NumpadEnter') { e.preventDefault(); return; }
+        if (k === 'Space') { e.preventDefault(); if (e.repeat) return; if (this.phase === 'launch') this.judgeLaunch(false); else this.doDash(); }
+        if (k === 'KeyE' || k === 'ShiftLeft' || k === 'ShiftRight') this.doSkill();
+        if (k === 'Escape' || k === 'KeyP') this.pause();
       }
       this.keys[k] = e.type === 'keydown';
     };
@@ -328,8 +329,8 @@ class BattleScene {
 
   keySteer() {
     const k = this.keys;
-    let x = (k['d'] || k['arrowright'] || k['ㅇ'] ? 1 : 0) - (k['a'] || k['arrowleft'] || k['ㅁ'] ? 1 : 0);
-    let y = (k['s'] || k['arrowdown'] || k['ㄴ'] ? 1 : 0) - (k['w'] || k['arrowup'] || k['ㅈ'] ? 1 : 0);
+    let x = (k.KeyD || k.ArrowRight ? 1 : 0) - (k.KeyA || k.ArrowLeft ? 1 : 0);
+    let y = (k.KeyS || k.ArrowDown ? 1 : 0) - (k.KeyW || k.ArrowUp ? 1 : 0);
     if (x || y) { const l = Math.hypot(x, y); return { x: x / l, y: y / l }; }
     return null;
   }

@@ -33,8 +33,9 @@ export async function playDialog(script, opts = {}) {
   skip.addEventListener('click', (e) => { e.stopPropagation(); Audio.sfx('back'); skipping = true; if (resolveTap) resolveTap(); });
   let resolveTap = null;
   dlg.addEventListener('pointerdown', (e) => { if (e.target.closest('.btn')) return; if (resolveTap) resolveTap(); });
-  const keyH = (e) => { if ((e.key === ' ' || e.key === 'Enter') && resolveTap) { e.preventDefault(); resolveTap(); } };
-  window.addEventListener('keydown', keyH);
+  const keyH = (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (resolveTap) resolveTap(); } };
+  window.addEventListener('keydown', keyH, true);
+  try { document.activeElement && document.activeElement.blur && document.activeElement.blur(); } catch (e) {}
   const waitTap = () => new Promise(r => { resolveTap = () => { resolveTap = null; r(); }; });
 
   let lastSide = { left: null, right: null };
@@ -126,7 +127,7 @@ export async function playDialog(script, opts = {}) {
     textEl.innerHTML = rich(q); next.style.visibility = 'hidden';
   }
 
-  window.removeEventListener('keydown', keyH);
+  window.removeEventListener('keydown', keyH, true);
   dlg.style.transition = 'opacity .25s'; dlg.style.opacity = '0';
   await sleep(250);
   dlg.remove();

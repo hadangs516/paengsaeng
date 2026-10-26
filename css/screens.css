@@ -32,7 +32,7 @@
 .intro .st-title { font-size: 28px; text-align: center; margin-top: 12px; }
 .strow { display: flex; gap: 8px; width: 100%; max-width: 480px; padding: 0 10px; }
 .stcard { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 12px; border-radius: 20px; border: 3px solid var(--line); background: linear-gradient(180deg, #2a3678, #161e4c); box-shadow: 0 5px 0 var(--line); transition: transform .2s; }
-.stcard.on { transform: translateY(-8px); background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 55%, #2a3678), #161e4c); outline: 4px solid var(--yellow); }
+.stcard.on { transform: translateY(-8px); background: linear-gradient(180deg, var(--tc), #161e4c); background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 55%, #2a3678), #161e4c); outline: 4px solid var(--yellow); }
 .stcard-top { width: 92%; aspect-ratio: 1; animation: spinSlow 3s linear infinite; }
 .stcard.on .stcard-top { animation-duration: .5s; }
 .stcard-top img { width: 100%; filter: drop-shadow(0 6px 8px rgba(0,0,0,.6)); }
@@ -72,7 +72,7 @@
 .sidebtn .reddot { top: -4px; right: 0; }
 .homecenter { position: absolute; left: 0; right: 0; top: 0; bottom: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; }
 .showcase { position: relative; width: min(58vw, 280px, 34vh); aspect-ratio: 1; cursor: pointer; }
-.sc-ring { position: absolute; inset: -14%; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--tc) 55%, transparent) 0%, transparent 62%); animation: ringPulse 2.4s ease-in-out infinite; }
+.sc-ring { position: absolute; inset: -14%; border-radius: 50%; background: radial-gradient(circle, var(--tc) 0%, transparent 62%); background: radial-gradient(circle, color-mix(in srgb, var(--tc) 55%, transparent) 0%, transparent 62%); animation: ringPulse 2.4s ease-in-out infinite; }
 @keyframes ringPulse { 50% { transform: scale(1.08); opacity: .75; } }
 .sc-top { position: absolute; inset: 0; animation: spinSlow .55s linear infinite; z-index: 2; }
 .sc-top img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,.55)); }
@@ -85,7 +85,7 @@
 .sc-cplabel { font: 800 13px/1 var(--f-body); color: var(--sub); }
 .sc-cp .num { font: 400 26px/1 var(--f-display); color: var(--yellow); }
 .sc-lv { font: 400 15px/1 var(--f-display); color: #fff; paint-order: stroke fill; -webkit-text-stroke: 3px var(--line); }
-.idlebub { position: absolute; top: 4%; right: 50%; transform: translateX(118%); z-index: 4; display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 6px; border-radius: 16px; background: rgba(8,12,34,.85); border: 2.5px solid var(--line); box-shadow: 0 4px 0 rgba(0,0,0,.4); animation: bob 1.6s ease-in-out infinite; }
+.idlebub { position: absolute; top: 8px; left: 0; right: 0; margin: 0 auto; width: max-content; z-index: 4; display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 6px; border-radius: 16px; background: rgba(8,12,34,.85); border: 2.5px solid var(--line); box-shadow: 0 4px 0 rgba(0,0,0,.4); animation: bob 1.6s ease-in-out infinite; }
 .idlebub.ready { background: linear-gradient(180deg, #3a4ea8, #1d2a6a); }
 .idlebub.full { background: linear-gradient(180deg, #ffe066, #ffb300); color: #3a2200; }
 .ib-ic { width: 36px; height: 36px; }
@@ -115,7 +115,7 @@
 .td { margin: 0 10px; padding: 12px; border-radius: 20px; }
 .td-top { display: flex; gap: 12px; align-items: center; }
 .td-img { position: relative; width: 112px; height: 112px; flex: none; display: grid; place-items: center; }
-.td-img::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--rc) 60%, transparent), transparent 66%); }
+.td-img::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; background: radial-gradient(circle, var(--rc), transparent 66%); background: radial-gradient(circle, color-mix(in srgb, var(--rc) 60%, transparent), transparent 66%); }
 .td-img img { position: relative; width: 100%; animation: spinSlow 1.1s linear infinite; filter: drop-shadow(0 6px 8px rgba(0,0,0,.5)); }
 .td-img.lvpop img { animation: spinSlow .25s linear infinite, lvpop .35s ease; }
 @keyframes lvpop { 40% { transform: scale(1.18); filter: brightness(1.6) drop-shadow(0 0 16px #fff6a0); } }
@@ -146,7 +146,7 @@
 .tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
 
 /* ───── 부품 카드 ───── */
-.partcard { position: relative; width: 100%; aspect-ratio: 1; border-radius: 16px; border: 3px solid var(--line); background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--rc) 70%, #fff 0%), color-mix(in srgb, var(--rc) 45%, #10163a)); box-shadow: inset 0 0 0 2px rgba(255,255,255,.25), 0 3px 0 rgba(0,0,0,.35); display: grid; place-items: center; overflow: hidden; }
+.partcard { position: relative; width: 100%; aspect-ratio: 1; border-radius: 16px; border: 3px solid var(--line); background: radial-gradient(circle at 50% 35%, var(--rc), var(--rc)); background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--rc) 70%, #fff 0%), color-mix(in srgb, var(--rc) 45%, #10163a)); box-shadow: inset 0 0 0 2px rgba(255,255,255,.25), 0 3px 0 rgba(0,0,0,.35); display: grid; place-items: center; overflow: hidden; }
 .partcard.small { width: 70px; height: 70px; }
 .partcard.sel { outline: 3px solid var(--yellow); outline-offset: 1px; }
 .pc-icon { width: 66%; height: 66%; }
@@ -221,15 +221,15 @@
 .rate-tops { font: 700 12px/1.4 var(--f-body); color: var(--sub); }
 .rate-row b { text-align: right; font: 400 17px/1 var(--f-display); }
 .rate-note { margin-top: 10px; font: 700 13px/1.5 var(--f-body); color: var(--sub); text-align: center; }
-.capsule { position: relative; width: 170px; height: 170px; border-radius: 50%; border: 5px solid var(--line); overflow: hidden; box-shadow: 0 0 0 6px color-mix(in srgb, var(--rc) 45%, transparent), 0 0 60px var(--rc), 0 14px 24px rgba(0,0,0,.55); }
-.cap-top { position: absolute; left: 0; right: 0; top: 0; height: 50%; background: radial-gradient(ellipse at 32% 30%, #ffffff 0 10%, rgba(255,255,255,.75) 18%, color-mix(in srgb, var(--rc) 25%, #e8f0ff) 60%, color-mix(in srgb, var(--rc) 40%, #b8c8ec)); }
+.capsule { position: relative; width: 170px; height: 170px; border-radius: 50%; border: 5px solid var(--line); overflow: hidden; box-shadow: 0 0 0 6px var(--rc), 0 0 60px var(--rc), 0 14px 24px rgba(0,0,0,.55); box-shadow: 0 0 0 6px color-mix(in srgb, var(--rc) 45%, transparent), 0 0 60px var(--rc), 0 14px 24px rgba(0,0,0,.55); }
+.cap-top { position: absolute; left: 0; right: 0; top: 0; height: 50%; background: radial-gradient(ellipse at 32% 30%, #ffffff 0 10%, rgba(255,255,255,.75) 18%, var(--rc) 60%, var(--rc)); background: radial-gradient(ellipse at 32% 30%, #ffffff 0 10%, rgba(255,255,255,.75) 18%, color-mix(in srgb, var(--rc) 25%, #e8f0ff) 60%, color-mix(in srgb, var(--rc) 40%, #b8c8ec)); }
 .cap-top::after { content: ''; position: absolute; left: 18%; top: 18%; width: 30%; height: 22%; border-radius: 50%; background: rgba(255,255,255,.85); filter: blur(2px); }
-.cap-bot { position: absolute; left: 0; right: 0; bottom: 0; height: 50%; background: radial-gradient(ellipse at 40% 0%, color-mix(in srgb, var(--rc) 55%, #fff) 0%, var(--rc) 45%, color-mix(in srgb, var(--rc) 55%, #000) 100%); }
+.cap-bot { position: absolute; left: 0; right: 0; bottom: 0; height: 50%; background: radial-gradient(ellipse at 40% 0%, var(--rc) 0%, var(--rc) 45%, var(--rc) 100%); background: radial-gradient(ellipse at 40% 0%, color-mix(in srgb, var(--rc) 55%, #fff) 0%, var(--rc) 45%, color-mix(in srgb, var(--rc) 55%, #000) 100%); }
 .cap-band { position: absolute; left: 0; right: 0; top: calc(50% - 5px); height: 10px; background: #fff; border-top: 3px solid var(--line); border-bottom: 3px solid var(--line); }
 .gopen { position: absolute; inset: 0; z-index: 55; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px; background: radial-gradient(circle, rgba(30,20,70,.92), rgba(4,4,16,.97)); animation: fadeIn .25s ease; }
 .gopen.closing { animation: fadeOut .25s ease both; }
 .gopen.flash::after { content: ''; position: absolute; inset: 0; background: #fff; animation: fadeOut .5s ease both; pointer-events: none; }
-.gopen-rays { position: absolute; width: 700px; height: 700px; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc) 45%, transparent) 0deg 10deg, transparent 10deg 24deg); -webkit-mask: radial-gradient(circle, #000 20%, transparent 65%); mask: radial-gradient(circle, #000 20%, transparent 65%); animation: spinSlow 9s linear infinite; pointer-events: none; }
+.gopen-rays { position: absolute; width: 700px; height: 700px; background: repeating-conic-gradient(from 0deg, var(--rc) 0deg 10deg, transparent 10deg 24deg); background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc) 45%, transparent) 0deg 10deg, transparent 10deg 24deg); -webkit-mask: radial-gradient(circle, #000 20%, transparent 65%); mask: radial-gradient(circle, #000 20%, transparent 65%); animation: spinSlow 9s linear infinite; pointer-events: none; }
 .capsule.drop { animation: capDrop .7s cubic-bezier(.3,1.6,.5,1) both, capWiggle .9s .8s ease-in-out infinite; }
 @keyframes capDrop { from { transform: translateY(-120vh) rotate(-200deg); } }
 @keyframes capWiggle { 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
@@ -237,8 +237,8 @@
 @keyframes capOpen { to { transform: scale(1.6); opacity: 0; } }
 .gopen-hint { position: relative; font: 400 20px/1 var(--f-display); animation: pulse 1.2s ease-in-out infinite; }
 .gopen-grid { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: 100%; max-width: 460px; }
-.gres { position: relative; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 14px; border: 3px solid var(--line); background: linear-gradient(180deg, color-mix(in srgb, var(--rc) 45%, #1b2560), #10163a); animation: popIn .4s cubic-bezier(.2,1.6,.4,1) both; overflow: hidden; }
-.gres-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--rc) 60%, transparent), transparent 70%); }
+.gres { position: relative; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 14px; border: 3px solid var(--line); background: linear-gradient(180deg, var(--rc), #10163a); background: linear-gradient(180deg, color-mix(in srgb, var(--rc) 45%, #1b2560), #10163a); animation: popIn .4s cubic-bezier(.2,1.6,.4,1) both; overflow: hidden; }
+.gres-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, var(--rc), transparent 70%); background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--rc) 60%, transparent), transparent 70%); }
 .gres-img { position: relative; width: 100%; aspect-ratio: 1; animation: spinSlow 1s linear infinite; }
 .gres-img img { width: 100%; }
 .gres-name { position: relative; width: 100%; font: 800 10px/1.2 var(--f-body); text-align: center; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.03em; }
@@ -372,7 +372,7 @@
 .rw-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 14px; background: rgba(8,12,34,.6); border: 2px solid rgba(255,255,255,.14); font-size: 20px; animation: popIn .35s cubic-bezier(.2,1.4,.4,1) both; }
 .rw-item .ic { width: 32px; height: 32px; }
 .newtop { position: relative; display: flex; flex-direction: column; align-items: center; }
-.newtop-glow { position: absolute; top: -10px; width: 260px; height: 260px; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc) 50%, transparent) 0 12deg, transparent 12deg 26deg); -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%); animation: spinSlow 8s linear infinite; }
+.newtop-glow { position: absolute; top: -10px; width: 260px; height: 260px; background: repeating-conic-gradient(from 0deg, var(--rc) 0 12deg, transparent 12deg 26deg); background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc) 50%, transparent) 0 12deg, transparent 12deg 26deg); -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%); animation: spinSlow 8s linear infinite; }
 .newtop-img { position: relative; width: 170px; height: 170px; animation: spinSlow .7s linear infinite; }
 .newtop-img img { width: 100%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.6)); }
 .newtop-skill { margin-top: 8px; font: 700 13px/1.4 var(--f-body); color: var(--sub); text-align: center; }

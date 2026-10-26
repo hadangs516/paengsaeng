@@ -58,7 +58,7 @@ registerScreen('loading', () => {
     box.innerHTML = '';
     box.append(h('div.center', h('div.tap-start', '화면을 터치해서 시작')));
     const startGame = () => {
-      el.removeEventListener('pointerdown', startGame);
+      el.removeEventListener('click', startGame);
       window.removeEventListener('keydown', startGame);
       Audio.unlock();
       Audio.setVolumes(Save.settings.bgm, Save.settings.sfx);
@@ -68,7 +68,7 @@ registerScreen('loading', () => {
       else if (!Save.state || !Save.state.flags.starter) go('intro', {}, 'fade');
       else go('home', {}, 'fade');
     };
-    el.addEventListener('pointerdown', startGame);
+    el.addEventListener('click', startGame);
     window.addEventListener('keydown', startGame);
   })();
   return el;

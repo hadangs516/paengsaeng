@@ -78,6 +78,7 @@ export function buildUpgradeTab(bar) {
         btn('판매', 'red small', async () => {
           if (owner) { deny(null, '장착한 부품은 팔 수 없어'); return; }
           if (p.rarity >= 2 || p.lvl >= 5) { if (!(await confirmBox(`**${p.name}** 판매할까?`, '판매', '돌아가기', 'red'))) return; }
+          if (!Save.state.parts.includes(p)) { renderAll(); return; }
           const v = G.sellPart(p); selUid = null; Audio.sfx('coin'); toast(`+${fmt(v)} 코인`, 'good'); renderAll();
         }),
         enhBtn));
@@ -114,7 +115,7 @@ export function buildUpgradeTab(bar) {
       const list = Save.state.parts.filter(p => !G.equippedBy(p.uid) && p.rarity <= 1 && p.lvl === 0);
       if (!list.length) { toast('정리할 일반/레어 부품이 없어'); return; }
       if (!(await confirmBox(`강화 안 한 일반·레어 부품 **${list.length}개**를 한 번에 팔까?`, '판매', '돌아가기', 'red'))) return;
-      let sum = 0; list.forEach(p => sum += G.sellPart(p));
+      let sum = 0; list.filter(p => Save.state.parts.includes(p)).forEach(p => sum += G.sellPart(p));
       Audio.sfx('coin'); toast(`+${fmt(sum)} 코인`, 'good'); selUid = null; renderAll();
     } }, '일괄 판매');
     filters.append(sellAll);

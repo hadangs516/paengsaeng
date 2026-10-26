@@ -64,13 +64,13 @@ export function partCard(p, opt = {}) {
 }
 
 // ───── 팝업들 ─────
-export function levelUpPopup(lv) {
+export function levelUpPopup(lv, onClose) {
   Audio.sfx('levelup');
   confetti(70);
   modal({ title: '레벨 업!', body: h('div.center',
     h('div.display.stroke', { style: { fontSize: '64px', color: '#ffd23f', lineHeight: 1.1, animation: 'popIn .5s cubic-bezier(.2,1.6,.4,1) both' } }, 'Lv.' + lv),
     h('div', { style: { font: '700 15px/1.5 var(--f-body)', color: 'var(--sub)', marginTop: '6px' } }, '플레이어 레벨이 올랐어!')),
-    buttons: [{ label: '확인', cls: 'yellow' }] });
+    buttons: [{ label: '확인', cls: 'yellow' }], onClose });
 }
 
 export function newTopPopup(id, res = {}) {

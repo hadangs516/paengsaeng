@@ -23,8 +23,8 @@ export function buildTopsTab(bar) {
     head.append(h('b.display', '내 팽이'), h('span.thead-sub', `도감 ${G.ownedIds().length}/${TOP_IDS.length}`, h('em', `모든 능력 +${Math.round((G.collectionBonus() - 1) * 100)}%`)));
   };
 
-  let holdT = null, holdN = 0;
-  const stopHold = () => { clearTimeout(holdT); holdT = null; holdN = 0; };
+  let holdT = null, holdN = 0, holding = false;
+  const stopHold = () => { holding = false; clearTimeout(holdT); holdT = null; holdN = 0; };
 
   const doLv = () => {
     const id = sel;
@@ -56,8 +56,10 @@ export function buildTopsTab(bar) {
     const lvBtn = h('button.btn.td-lvbtn' + (lv >= MAX_LEVEL || Save.state.coins < cost ? '.gray' : '.green'), h('span', lv >= MAX_LEVEL ? '최대 레벨' : '레벨업'), lv < MAX_LEVEL ? h('span.cost', icon('coin'), fmt(cost)) : null);
     lvBtn.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      stopHold();
+      holding = true;
       if (!doLv()) return;
-      const rep = () => { holdN++; holdT = setTimeout(() => { if (doLv()) rep(); }, Math.max(60, 240 - holdN * 25)); };
+      const rep = () => { if (!holding) return; holdN++; holdT = setTimeout(() => { if (holding && doLv()) rep(); }, Math.max(60, 240 - holdN * 25)); };
       holdT = setTimeout(rep, 380);
     });
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => lvBtn.addEventListener(ev, stopHold));

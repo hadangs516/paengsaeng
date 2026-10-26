@@ -168,7 +168,7 @@ export function enhance(part) {
 
 export function sellPart(part) {
   const st = S();
-  if (equippedBy(part.uid)) return 0;
+  if (equippedBy(part.uid) || !st.parts.includes(part)) return 0;
   const val = Math.round((20 + part.rarity * 60) * (1 + part.lvl * 0.5) * (1 + part.tier * 0.4));
   st.parts = st.parts.filter(p => p !== part);
   st.coins += val; bus.emit('coins'); Save.touch();

@@ -79,8 +79,10 @@ registerScreen('adventure', (params = {}) => {
 
   async function tapStage(s, unlocked, node) {
     if (!unlocked) { deny(node, '앞 스테이지를 먼저 깨야 해!'); return; }
-    Audio.sfx('click');
-    await runStageLoop(s.idx);
+    if (window.__playing) return;
+    Audio.sfx('click'); node.blur();
+    window.__playing = true;
+    try { await runStageLoop(s.idx); } finally { window.__playing = false; }
   }
 
   async function runStageLoop(idx) {

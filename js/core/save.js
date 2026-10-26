@@ -1,5 +1,5 @@
 // 저장: localStorage (진행 데이터) + 개인 설정은 따로 저장
-export const VERSION = 'v1.0.0';
+export const VERSION = 'v1.0.1';
 const KEY = 'paengsaeng_save_v1';
 const SKEY = 'paengsaeng_settings_v1';
 
@@ -56,7 +56,7 @@ export const Save = {
   start() { if (!this.state) this.state = newState(); },
 
   save() {
-    if (!this.state) return false;
+    if (!this.state || this.stale) return false;
     this.state.lastSave = Date.now();
     try { localStorage.setItem(KEY, JSON.stringify(this.state)); this.dirty = false; return true; }
     catch (e) { return false; }
@@ -92,8 +92,9 @@ export const Save = {
     try {
       const st = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
       if (!st || !st.v || !st.tops) return false;
+      const prev = this.state;
       this.state = migrate(st);
-      this.save();
+      if (!this.save()) { this.state = prev; return false; }
       return true;
     } catch (e) { return false; }
   },

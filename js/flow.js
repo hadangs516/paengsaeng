@@ -68,6 +68,9 @@ export async function playStage(idx, opts = {}) {
   if (res.win && st.post && first) {
     await playDialog(st.post, { bg: ch.bg });
   }
+  // 레벨업 축하는 결과/대사가 끝난 뒤에 (다음 배틀을 가리지 않게)
+  if (scene._lvUps && next !== 'next' && next !== 'retry') await new Promise(r => { levelUpPopup(Save.state.lv, r); });
+  else if (scene._lvUps) toast('플레이어 **레벨 업!** Lv.' + Save.state.lv, 'good');
   return { win: res.win, next, first, stage: st };
 }
 
@@ -103,7 +106,7 @@ function showWin(scene, cfg, res, rw, done) {
       btn('다시하기', '', () => done('retry')),
       hasNext ? btn('다음 스테이지', 'yellow', () => done('next')) : btn('확인', 'yellow', () => done('back'))));
   });
-  if (rw.lvUps) setTimeout(() => levelUpPopup(Save.state.lv), 1600);
+  scene._lvUps = rw.lvUps;
 }
 
 function showLose(scene, cfg, res, coins, done) {
