@@ -45,7 +45,12 @@ registerScreen('loading', () => {
       pct.textContent = Math.round(shown * 92) + '%';
     });
     step.textContent = '글꼴 준비하는 중';
-    try { await Promise.race([document.fonts.ready, sleep(2500)]); await document.fonts.load('40px "Black Han Sans"'); } catch (e) {}
+    // 글꼴이 늦게 와도 3초 넘게 기다리지 않는다 (느린 네트워크 대비)
+    try {
+      const link = [...document.querySelectorAll('link[rel=stylesheet]')].find(l => l.href.includes('Black+Han+Sans'));
+      const cssReady = new Promise(r => { if (!link || (link.sheet && link.media === 'all')) r(); else link.addEventListener('load', () => r(), { once: true }); });
+      await Promise.race([cssReady.then(() => document.fonts.load('40px "Black Han Sans"')), sleep(3000)]);
+    } catch (e) {}
     bar.style.width = '100%'; pct.textContent = '100%';
     step.textContent = '준비 완료!';
     el._done = true;

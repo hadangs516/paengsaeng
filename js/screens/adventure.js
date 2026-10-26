@@ -1,6 +1,6 @@
 // 모험 지도: 챕터 카드 + 스테이지 길
 import { h, sleep } from '../core/util.js';
-import { registerScreen, go, icon, topImg, charImg, toast, deny, backBtn, btn, modal, rich } from '../core/ui.js';
+import { registerScreen, go, icon, topImg, charImg, toast, deny, backBtn, btn, modal, rich, bigText, confetti } from '../core/ui.js';
 import { Save } from '../core/save.js';
 import { Audio } from '../core/audio.js';
 import { path, bgCss } from '../core/assets.js';
@@ -85,6 +85,7 @@ registerScreen('adventure', (params = {}) => {
 
   async function runStageLoop(idx) {
     let cur = idx;
+    const chBefore = STAGES[Math.min(Save.state.progress, STAGES.length - 1)].ch - 1;
     while (true) {
       const r = await playStage(cur);
       if (r.cancel) break;
@@ -99,20 +100,20 @@ registerScreen('adventure', (params = {}) => {
     }
     // 장이 바뀌었으면 그 장으로
     const ch = STAGES[Math.min(Save.state.progress, STAGES.length - 1)].ch - 1;
-    if (ch !== chIdx && Save.state.progress < STAGES.length) {
+    if (ch !== chBefore && Save.state.progress < STAGES.length) {
       chIdx = ch;
       Audio.sfx('levelup');
-      toast(`**${CHAPTERS[ch].id}장 ${CHAPTERS[ch].name}** 열림!`, 'good');
+      bigText(`N장 클리어!`.replace('N', String(ch)), '#ffd23f', `다음: ${CHAPTERS[ch].name}`);
+      confetti(150);
     }
     Audio.playBgm('map');
     render();
   }
 
   async function ending() {
-    // 갤럭시 오메가 획득 + 엔딩
-    const res = G.addTop('galaxy_omega');
-    Save.state.flags.ending = true; Save.save();
-    await newTopPopup('galaxy_omega', res);
+    // 갤럭시 오메가는 보상 단계에서 이미 지급됨. 여기서는 연출만
+    Save.state.flags.endingSeen = true; Save.save();
+    await newTopPopup('galaxy_omega', { isNew: true });
     const card = h('div.ending',
       h('div.end-bg', { style: { backgroundImage: `url(${path.bg('keyart')})` } }),
       h('div.end-in',
@@ -124,12 +125,14 @@ registerScreen('adventure', (params = {}) => {
     document.querySelector('#app').append(card);
     Audio.playBgm('hub');
     Audio.sfx('win');
+    setTimeout(() => confetti(200), 600);
   }
 
   el._onShow = () => {
     Audio.playBgm('map');
     render();
-    if (params.autoplay !== undefined) runStageLoop(params.autoplay);
+    if (Save.state.flags.ending && !Save.state.flags.endingSeen) ending();
+    else if (params.autoplay !== undefined) runStageLoop(params.autoplay);
   };
   return el;
 });

@@ -74,7 +74,9 @@ class BattleScene {
     this.bindInput();
     this.onResize = () => { this.view && this.view.resize(); this.updateLayout(); };
     window.addEventListener('resize', this.onResize);
-    this.onVis = () => { if (document.hidden && this.phase === 'fight' && !this.paused) this.pause(); };
+    this.onVis = () => { if (document.hidden) { this.keys = {}; if (this.phase === 'fight' && !this.paused) this.pause(); } };
+    this.onBlur = () => { this.keys = {}; };
+    window.addEventListener('blur', this.onBlur);
     document.addEventListener('visibilitychange', this.onVis);
     this.updateLayout();
     Audio.playBgm(c.kind === 'boss' || c.final ? 'boss' : 'battle');
@@ -122,7 +124,7 @@ class BattleScene {
       advTxt[0] ? h('div.vs-adv.' + advTxt[1], `상성 ${advTxt[0]}`) : null,
       c.recCp ? h('div.vs-cp', h('span', '추천 전투력 '), h('b', c.recCp.toLocaleString('ko-KR')), h('span', '  ·  내 전투력 '), h('b' + (c.myCp >= c.recCp ? '.ok' : '.low'), c.myCp.toLocaleString('ko-KR'))) : null,
       h('div.vs-btns', c.noBack ? null : h('button.btn-back', { onclick: () => { Audio.sfx('back'); this.finishScene({ cancel: true }); } }, '돌아가기'),
-        btn('출전!', 'yellow big', () => { el.classList.add('out'); setTimeout(() => el.remove(), 300); this.launchPhase(); })),
+        btn('출전!', 'yellow big', () => { if (el._go) return; el._go = true; el.classList.add('out'); setTimeout(() => el.remove(), 300); this.launchPhase(); })),
     );
     this.overlay.append(el);
     Audio.sfx('whoosh');
@@ -144,7 +146,7 @@ class BattleScene {
     if (c.kind === 'gauntlet') { tops.push(this.makeTopDef(c.foes[0], 'e')); queue = c.foes.slice(1).map(f => this.makeTopDef(f, 'e')); }
     else if (c.kind === 'royale') c.foes.forEach((f, i) => tops.push(this.makeTopDef(f, 'e' + i)));
     else c.foes.forEach(f => tops.push(this.makeTopDef(f, 'e')));
-    this.battle = new Battle({ tops, timeLimit: c.timeLimit || 45, boss: c.kind === 'boss', mods: c.mods || {} });
+    this.battle = new Battle({ tops, timeLimit: c.timeLimit || 45, boss: c.kind === 'boss', mods: c.mods || {}, mustKO: c.kind === 'giant' });
     this.battle.queue = queue;
     this.me = this.battle.tops[0];
     this.buildCards();
@@ -183,6 +185,7 @@ class BattleScene {
 
   // ───── 발사 ─────
   async launchPhase() {
+    if (this.phase === 'launch' || this.ended || this.dead) return;
     this.phase = 'launch';
     const t = this.me;
     this.launch = { x: t.x, y: t.y, r: t.r, ringR: 0, judged: false, t0: 0 };
@@ -193,7 +196,7 @@ class BattleScene {
       if (big) cd.classList.add('go'); else cd.classList.remove('go');
     };
     if (this.cfg.tutorial && this.round === 0) this.showTip('원이 노란 원에 겹칠 때 **화면을 탭!**', 4200);
-    for (const n of ['3', '2', '1']) { showCount(n); Audio.sfx('count'); await sleep(this.cfg.mode === 'prologue' ? 380 : 480); }
+    for (const n of ['3', '2', '1']) { showCount(n); Audio.sfx('count'); await sleep(this.cfg.mode === 'prologue' ? 380 : 480); if (this.ended || this.dead) return; }
     showCount('고~ 슛!', true); Audio.sfx('go');
     // 줄어드는 원: 탭 타이밍
     this.launch.t0 = performance.now();
@@ -332,7 +335,7 @@ class BattleScene {
   }
 
   pause() {
-    if (this.paused || this.phase !== 'fight') return;
+    if (this.paused || this.phase !== 'fight' || this.ended || (this.battle && this.battle.over)) return;
     this.paused = true;
     Audio.stopHums();
     modal({ title: '일시정지', color: 'blue', body: h('div.center', { style: { font: '700 16px/1.6 var(--f-body)', color: 'var(--sub)' } }, '잠깐 쉬는 중이야'),
@@ -366,7 +369,9 @@ class BattleScene {
       for (const t of b.tops) if (t !== this.me) aiControl(b, t, t.side === 'p' ? 0.6 : (this.cfg.aiLevel ?? 0.5), dt);
       if (this.auto && this.me.gauge >= 100 && Math.random() < 0.05) this.me.wantSkill = true;
       if (this.cfg.forceLose) { this.me.steer.x = 0; this.me.steer.y = 0; }
-      b.update(dt);
+      // 2배속도 끊김 없이: 작은 단위로 나눠서 진행
+      let rem = dt;
+      while (rem > 1e-4 && !b.over) { const s = Math.min(rem, 0.033); b.update(s); rem -= s; }
       for (const ev of b.events) this.onEvent(ev);
       b.events.length = 0;
     } else if (b.over) {
@@ -415,8 +420,9 @@ class BattleScene {
   }
 
   onFinish(ev) {
-    const f = FINISH[ev.how];
+    let f = FINISH[ev.how];
     if (!f) return;
+    if (ev.how === 'judge' && ev.winner && ev.winner !== 'p') f = { label: '판정패', color: '#9aa4c8' };
     if (ev.how === 'burst') Audio.sfx('burst');
     else if (ev.how === 'out') Audio.sfx('ringout');
     else Audio.sfx('spinout');
@@ -430,6 +436,7 @@ class BattleScene {
   async onEnd(res) {
     const c = this.cfg;
     await sleep(1300);
+    if (this.ended || this.dead) return;
     const win = res.winner === 'p';
     if (c.points && res.how !== 'giveup') {
       const pt = FINISH[res.how]?.pt || 1;
@@ -443,6 +450,7 @@ class BattleScene {
         Audio.sfx(win ? 'upgrade' : 'deny');
         await sleep(1700);
         msg.remove();
+        if (this.ended || this.dead) return;
         Audio.stopHums();
         this.newBattle();
         this.launchPhase();
@@ -488,6 +496,7 @@ class BattleScene {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('keydown', this.onKey);
     window.removeEventListener('keyup', this.onKey);
+    window.removeEventListener('blur', this.onBlur);
     document.removeEventListener('visibilitychange', this.onVis);
     document.body.classList.remove('in-battle');
     this.root.classList.add('leave-fade');
@@ -511,7 +520,7 @@ class BattleScene {
       c.classList.toggle('over', t.overspin > 0 && t.alive);
     }
     // 타이머 (숫자 없이 원으로)
-    const k = clamp(1 - b.t / b.timeLimit, 0, 1);
+    const k = clamp(1 - b.t / b.deadline, 0, 1);
     const fg = this.timerEl.querySelector('.fg');
     fg.style.strokeDashoffset = String(113.1 * (1 - k));
     this.timerEl.classList.toggle('low', k < 0.2);

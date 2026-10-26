@@ -8,8 +8,8 @@ export const ICON_IDS = ['coin', 'gem', 'chest', 'trophy', 'part_ring', 'part_di
 
 // 아직 없는 파일은 불러오지 않도록 실제 있는 것만 적는다 (배포 때 갱신)
 export const AVAILABLE = {
-  stadiums: ['st_playground', 'st_school', 'st_sky'],
-  bg: ['keyart', 'bg_playground', 'bg_school', 'bg_city', 'bg_sky'],
+  stadiums: ['st_playground', 'st_school', 'st_beach', 'st_city', 'st_volcano', 'st_snow', 'st_sky', 'st_chaos', 'st_tower'],
+  bg: ['keyart', 'bg_playground', 'bg_school', 'bg_beach', 'bg_city', 'bg_volcano', 'bg_snow', 'bg_sky', 'bg_chaos', 'bg_shop'],
   icons: [],
 };
 

@@ -38,11 +38,11 @@ export const Audio = {
     comp.threshold.value = -20; comp.knee.value = 8; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.18;
     const makeup = ctx.createGain(); makeup.gain.value = 1.9;
     limiter = ctx.createDynamicsCompressor();
-    limiter.threshold.value = -3; limiter.knee.value = 0; limiter.ratio.value = 20; limiter.attack.value = 0.001; limiter.release.value = 0.08;
+    limiter.threshold.value = -4; limiter.knee.value = 0; limiter.ratio.value = 20; limiter.attack.value = 0.0005; limiter.release.value = 0.08;
     master = ctx.createGain(); master.gain.value = 1;
     comp.connect(makeup); makeup.connect(limiter); limiter.connect(master); master.connect(ctx.destination);
 
-    bgmBus = ctx.createGain(); bgmBus.gain.value = bgmVol * 0.62; bgmBus.connect(comp);
+    bgmBus = ctx.createGain(); bgmBus.gain.value = bgmVol * 1.2; bgmBus.connect(comp);
     sfxBus = ctx.createGain(); sfxBus.gain.value = sfxVol; sfxBus.connect(comp);
     humBus = ctx.createGain(); humBus.gain.value = sfxVol * 0.5; humBus.connect(comp);
 
@@ -62,7 +62,7 @@ export const Audio = {
     bgmVol = b; sfxVol = s;
     if (!ctx) return;
     const t = ctx.currentTime;
-    bgmBus.gain.setTargetAtTime(muted ? 0 : b * 0.62, t, 0.05);
+    bgmBus.gain.setTargetAtTime(muted ? 0 : b * 1.2, t, 0.05);
     sfxBus.gain.setTargetAtTime(muted ? 0 : s, t, 0.05);
     humBus.gain.setTargetAtTime(muted ? 0 : s * 0.5, t, 0.05);
   },
@@ -80,6 +80,16 @@ export const Audio = {
     current.gain.gain.value = 0.0001;
     current.gain.gain.exponentialRampToValueAtTime(1, ctx.currentTime + 0.5);
     current.gain.connect(bgmBus);
+    // 음원 파일이 등록돼 있으면 합성 대신 파일을 반복 재생 (나중에 직접 만든 음악으로 교체 가능)
+    if (MUSIC_FILES[name]) {
+      const c = current;
+      c.file = true;
+      loadBuffer(MUSIC_FILES[name]).then(buf => {
+        if (current !== c || !buf) { if (current === c) c.file = false; return; }
+        const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+        src.connect(c.gain); src.start(); c.src = src;
+      });
+    }
     if (!schedTimer) schedTimer = setInterval(scheduler, 25);
   },
 
@@ -132,6 +142,14 @@ export const Audio = {
 const hums = new Map();
 let pendingSong = null;
 
+// 직접 만든 음원으로 바꾸고 싶으면 여기에 경로를 적으면 된다. 예) battle: 'assets/audio/battle.mp3'
+const MUSIC_FILES = {};
+const bufCache = {};
+function loadBuffer(url) {
+  if (!bufCache[url]) bufCache[url] = fetch(url).then(r => r.ok ? r.arrayBuffer() : null).then(a => a ? ctx.decodeAudioData(a) : null).catch(() => null);
+  return bufCache[url];
+}
+
 function stopSong(fade) {
   if (!current) return;
   const c = current; current = null;
@@ -139,6 +157,7 @@ function stopSong(fade) {
   c.gain.gain.cancelScheduledValues(t);
   c.gain.gain.setValueAtTime(Math.max(0.0001, c.gain.gain.value), t);
   c.gain.gain.exponentialRampToValueAtTime(0.0001, t + fade);
+  if (c.src) try { c.src.stop(t + fade + 0.05); } catch (e) {}
   setTimeout(() => c.gain.disconnect(), fade * 1000 + 200);
 }
 
@@ -344,7 +363,7 @@ const SONGS = {
 };
 
 function scheduler() {
-  if (!current || !ctx) return;
+  if (!current || !ctx || current.file) return;
   const c = current, s = c.song;
   const stepDur = 60 / s.bpm / 4;
   while (c.next < ctx.currentTime + 0.14) {

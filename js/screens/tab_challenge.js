@@ -56,7 +56,7 @@ export function buildChallengeTab(bar) {
       Save.state.coins += coins; Save.state.gems += gems;
       G.bus.emit('coins'); G.bus.emit('gems'); Save.save();
       Audio.sfx('win');
-    } else { coins = Math.round(coins * 0.3); Save.state.coins += coins; G.bus.emit('coins'); Save.save(); Audio.sfx('lose'); }
+    } else { coins = res.how === 'giveup' ? 0 : Math.round(coins * 0.3); Save.state.coins += coins; G.bus.emit('coins'); Save.save(); Audio.sfx('lose'); }
     await new Promise(r => scene.showResult((el2) => {
       el2.append(h('div.res-title.display.stroke.' + (res.win ? 'win' : 'lose'), res.win ? `${floor}층 돌파!` : '패배…'),
         h('div.res-rewards', h('div.res-rw', icon('coin'), h('span', '+' + fmt(coins))), gems ? h('div.res-rw.first', icon('gem'), h('span', '+' + fmt(gems))) : null),

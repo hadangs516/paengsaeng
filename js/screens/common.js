@@ -2,7 +2,7 @@
 import { h, $ } from '../core/util.js';
 import { Save } from '../core/save.js';
 import { Audio } from '../core/audio.js';
-import { icon, topImg, charImg, modal, countTo, flyTo, btn, rarChip, typeChip, starsEl, rich } from '../core/ui.js';
+import { icon, topImg, charImg, modal, countTo, flyTo, btn, rarChip, typeChip, starsEl, rich, confetti } from '../core/ui.js';
 import { TOPS, RARITY, TYPES, SKILLS } from '../data/tops.js';
 import { partStats, xpNeed } from '../data/balance.js';
 import * as G from '../game.js';
@@ -66,6 +66,7 @@ export function partCard(p, opt = {}) {
 // ───── 팝업들 ─────
 export function levelUpPopup(lv) {
   Audio.sfx('levelup');
+  confetti(70);
   modal({ title: '레벨 업!', body: h('div.center',
     h('div.display.stroke', { style: { fontSize: '64px', color: '#ffd23f', lineHeight: 1.1, animation: 'popIn .5s cubic-bezier(.2,1.6,.4,1) both' } }, 'Lv.' + lv),
     h('div', { style: { font: '700 15px/1.5 var(--f-body)', color: 'var(--sub)', marginTop: '6px' } }, '플레이어 레벨이 올랐어!')),
@@ -76,6 +77,7 @@ export function newTopPopup(id, res = {}) {
   const t = TOPS[id];
   const r = RARITY[t.rarity];
   Audio.sfx('reveal', { rarity: t.rarity });
+  if (t.rarity >= 3) confetti(120);
   const title = res.isNew === false && res.starUp ? '별 등급 업!' : res.dup ? '중복 획득' : '새 팽이 획득!';
   return new Promise(resolve => modal({ title, color: t.rarity >= 3 ? '' : 'purple', body: h('div.newtop',
     h('div.newtop-glow', { style: { '--rc': r.color } }),

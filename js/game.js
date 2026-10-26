@@ -204,8 +204,7 @@ export function stageAvailable(idx) { return idx <= S().progress; }
 export function chapterOf(idx) { return CHAPTERS[STAGES[idx].ch - 1]; }
 
 export function enemyStats(f, idx, kind) {
-  const k = kind === 'rival' || STAGES[idx]?.kind === 'rival' ? 'rival' : kind;
-  return B.enemyStatsFor(f, idx, k);
+  return B.enemyStatsFor(f, idx, kind);
 }
 
 // 승리 시 별 (1: 승리, 2: 체력 50% 이상, 3: 버스트/아웃 피니시)
@@ -229,11 +228,14 @@ export function stageReward(idx, res) {
   st.cleared[idx] = (st.cleared[idx] || 0) + 1;
   const newProgress = first && idx === st.progress;
   if (newProgress) st.progress = Math.min(STAGES.length, idx + 1);
+  // 최종 보스 첫 클리어: 갤럭시 오메가를 바로 지급 (연출 전에 꺼져도 보상 유지)
+  let galaxy = null;
+  if (stage.final && first && !st.flags.ending) { galaxy = addTop('galaxy_omega'); st.flags.ending = true; }
   st.coins += coins; st.gems += gems;
   const lvUps = addXp(xp);
   bus.emit('coins'); bus.emit('gems');
   Save.save();
-  return { coins, xp, gems, parts, stars, prevStars, first, lvUps, newProgress };
+  return { coins, xp, gems, parts, stars, prevStars, first, lvUps, newProgress, galaxy };
 }
 
 export function recordBattle(res, mode) {
@@ -296,7 +298,7 @@ export function missionReady() {
 }
 
 export const ACH = [
-  { key: 'clear', name: '스테이지 클리어', val: () => S().progress, tiers: [5, 15, 30, 45, 62], gems: [30, 50, 80, 120, 200] },
+  { key: 'clear', name: '스테이지 클리어', val: () => S().progress, tiers: [5, 15, 30, 45, STAGES.length], gems: [30, 50, 80, 120, 200] },
   { key: 'burst', name: '버스트 피니시', val: () => S().stats.burst, tiers: [3, 10, 30, 80], gems: [20, 40, 80, 150] },
   { key: 'out', name: '아웃 피니시', val: () => S().stats.out, tiers: [3, 10, 30, 80], gems: [20, 40, 80, 150] },
   { key: 'collect', name: '팽이 수집', val: () => ownedIds().length, tiers: [3, 6, 10, 14, 19], gems: [30, 60, 100, 150, 300] },

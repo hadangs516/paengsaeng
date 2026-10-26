@@ -28,12 +28,14 @@ const DECAY = { atk: 1.0, def: 1.05, sta: 0.6, bal: 0.9 };
 export const dmgBase = (a, d) => (a.atk * a.atk) / (a.atk + d.def) * K;
 
 export class Battle {
-  constructor({ tops, pockets = 3, timeLimit = 45, boss = false, mods = {} }) {
+  constructor({ tops, pockets = 3, timeLimit = 45, boss = false, mods = {}, mustKO = false }) {
+    this.mustKO = mustKO; // 시간 안에 못 쓰러뜨리면 패배 (거대 팽이)
     this.mods = mods;
     if (mods.pockets) pockets = mods.pockets;
     this.windT = 3; this.wind = { x: 0, y: 0, t: 0 };
     this.t = 0;
     this.timeLimit = timeLimit;
+    this.deadline = timeLimit; // 연속전에서는 상대가 나올 때마다 늘어난다
     this.events = [];
     this.over = false;
     this.result = null;
@@ -173,6 +175,7 @@ export class Battle {
         fx += t.steer.x * steerPow; fy += t.steer.y * steerPow;
       }
       // 블랙홀 등 끌어당김
+      if (f.pull > 0 && f.puller && !f.puller.alive) { f.pull = 0; f.puller = null; }
       if (f.pull > 0 && f.puller) {
         const p = f.puller; const dx = p.x - t.x, dy = p.y - t.y, dd = Math.hypot(dx, dy) || 1;
         fx += dx / dd * 900; fy += dy / dd * 900;
@@ -348,6 +351,8 @@ export class Battle {
   kill(t, how, src) {
     if (!t.alive) return;
     t.alive = false; t.finish = how; t.killer = src || null;
+    this.lastHow = how;
+    for (const o of this.tops) if (o.fx.puller === t) { o.fx.pull = 0; o.fx.puller = null; }
     if (how === 'out') { t.hp = Math.max(0, t.hp); }
     this.emit({ type: 'finish', top: t, how, src });
     this.slowmo = 0.3;
@@ -387,7 +392,7 @@ export class Battle {
       for (const t of alive) t.hp = Math.min(t.maxHp, t.hp + t.maxHp * 0.15);
       this.spawn(d);
       this.emit({ type: 'nextFoe', left: this.queue.length });
-      this.t = Math.min(this.t, this.timeLimit - 30);
+      this.deadline = Math.max(this.deadline, this.t + 30);
       return;
     }
     if (!pAlive || sides.size <= 1) {
@@ -397,23 +402,22 @@ export class Battle {
       this.emit({ type: 'end', result: this.result });
       return;
     }
-    if (this.t >= this.timeLimit) {
+    if (this.t >= this.deadline) {
       // 판정: 남은 회전력 비율 합
       const score = {};
       for (const t of this.alive()) score[t.side] = Math.max(score[t.side] || 0, t.hp / t.maxHp);
-      const winner = Object.entries(score).sort((a, b) => b[1] - a[1])[0][0];
+      let winner = Object.entries(score).sort((a, b) => b[1] - a[1])[0][0];
+      // 연속전에 남은 상대가 있거나 거대 팽이를 못 쓰러뜨리면 패배
+      if (winner === 'p' && ((this.queue && this.queue.length) || this.mustKO)) winner = 'e';
       for (const t of this.alive()) if (t.side !== winner) { t.alive = false; t.finish = 'judge'; }
       this.over = true;
       this.result = { winner, how: 'judge', time: this.t, judge: true };
-      this.emit({ type: 'finish', top: null, how: 'judge' });
+      this.emit({ type: 'finish', top: null, how: 'judge', winner });
       this.emit({ type: 'end', result: this.result });
     }
   }
 
-  lastFinishHow() {
-    const dead = this.tops.filter(t => t.finish);
-    return dead.length ? dead[dead.length - 1].finish : 'spin';
-  }
+  lastFinishHow() { return this.lastHow || 'spin'; }
 
   // ───────────── 필살기 ─────────────
   castSkill(t) {
@@ -438,11 +442,11 @@ export class Battle {
       case 'blackHole': if (e) { e.fx.pull = 3; e.fx.puller = t; e.fx.drainDps = dmgBase(t, e) * 1.1; } break;
       case 'moonHeal': t.hp = Math.min(t.maxHp, t.hp + t.maxHp * 0.4); t.fx.regen = 2; break;
       case 'sakuraDance': t.fx.petals = 3; t.petalTimer = 0; this.petalLoop(t); break;
-      case 'lionRoar': if (e) { e.fx.stun = 1.6; } t.fx.empower = 2; t.empowerMul = 2.2; this.later(0.3, () => toward(900)); break;
+      case 'lionRoar': if (e) { e.fx.stun = 1.6; } t.fx.empower = 2; t.empowerMul = 2.2; this.later(0.3, () => { if (t.alive && e && e.alive && !this.over) toward(900); }); break;
       case 'chaosRage': this.shockwave(t, 1000, 1.2); if (e) { e.fx.pull = 2.2; e.fx.puller = t; e.fx.drainDps = dmgBase(t, e) * 1.0; } break;
       case 'galaxyNova': if (e) { e.fx.pull = 1.6; e.fx.puller = t; e.fx.drainDps = dmgBase(t, e) * 0.9; } this.later(1.5, () => { if (t.alive && !this.over) this.shockwave(t, 1300, 2.2); }); break;
       case 'ironCharge': t.fx.fort = 2; t.fx.empower = 2; t.empowerMul = 2.4; toward(780); break;
-      case 'sharkFrenzy': this.every(3, 0.4, () => { if (t.alive && !this.over) { t.fx.empower = 0.45; t.empowerMul = 1.6; toward(820); this.emit({ type: 'dash', top: t }); } }); break;
+      case 'sharkFrenzy': this.every(3, 0.4, () => { const e2 = this.nearestFoe(t); if (t.alive && e2 && !this.over) { t.fx.empower = 0.45; t.empowerMul = 1.6; const dx = e2.x - t.x, dy = e2.y - t.y, d = Math.hypot(dx, dy) || 1; t.vx = dx / d * 820; t.vy = dy / d * 820; this.emit({ type: 'dash', top: t }); } }); break;
       case 'earthquake': this.shockwave(t, 800, 1.0); if (e) e.fx.slow = 1.8; break;
       case 'crystalShine': t.hp = Math.min(t.maxHp, t.hp + t.maxHp * 0.2); if (e) e.fx.slow = 2; break;
       default: t.fx.empower = 1.4; t.empowerMul = 2; toward(850);

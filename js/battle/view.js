@@ -17,7 +17,7 @@ const STADIUM_THEME = {
 };
 
 // 생성 그림 경기장의 바닥 반지름 비율 (그림 반지름 대비)
-const STADIUM_FLOOR = { st_playground: 0.76, st_school: 0.81, st_sky: 0.74, st_beach: 0.8, st_city: 0.8, st_volcano: 0.8, st_snow: 0.8, st_chaos: 0.8, st_tower: 0.8 };
+const STADIUM_FLOOR = { st_playground: 0.76, st_school: 0.81, st_sky: 0.74, st_beach: 0.76, st_city: 0.78, st_volcano: 0.8, st_snow: 0.8, st_chaos: 0.76, st_tower: 0.79 };
 
 export class BattleView {
   constructor(canvas, opts) {

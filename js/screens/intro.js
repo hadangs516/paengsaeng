@@ -98,9 +98,11 @@ function starterSelect(el) {
     Audio.sfx('reveal', { rarity: 3 });
     await playDialog('starter_after', { bg: 'bg_shop', top: TOPS[sel].name });
     // 튜토리얼 배틀 (1-1)
-    const r = await playStage(0);
+    let r = await playStage(0);
+    while (r && r.next === 'retry') r = await playStage(0);
     Save.state.flags.tutorial = true; Save.save();
-    go('home', { fromTutorial: true }, 'fade');
+    if (r && r.next === 'next') go('adventure', { autoplay: 1 }, 'fade');
+    else go('home', { fromTutorial: true, tab: r && r.next === 'upgrade' ? 'tops' : 'home' }, 'fade');
   });
   confirm.classList.add('disabled');
   const cards = ids.map(id => {

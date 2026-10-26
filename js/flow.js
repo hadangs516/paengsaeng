@@ -4,7 +4,7 @@ import { playDialog } from './core/dialog.js';
 import { Save } from './core/save.js';
 import { Audio } from './core/audio.js';
 import { h, sleep } from './core/util.js';
-import { icon, topImg, countTo, btn, modal, toast, rich, go } from './core/ui.js';
+import { icon, topImg, countTo, btn, modal, toast, rich, go, confetti } from './core/ui.js';
 import { path } from './core/assets.js';
 import { TOPS, TYPES, RARITY } from './data/tops.js';
 import { STAGES, CHAPTERS, CHARS, MODS } from './data/story.js';
@@ -61,7 +61,7 @@ export async function playStage(idx, opts = {}) {
     const rw = G.stageReward(idx, res);
     next = await new Promise(r => showWin(scene, cfg, res, rw, r));
   } else {
-    const coins = G.loseReward(idx);
+    const coins = res.how === 'giveup' ? 0 : G.loseReward(idx);
     next = await new Promise(r => showLose(scene, cfg, res, coins, r));
   }
   scene.close();
@@ -81,6 +81,7 @@ function rewardRow(kind, amount, cls = '') {
 function showWin(scene, cfg, res, rw, done) {
   Audio.stopBgm(0.3);
   Audio.sfx('win');
+  if (rw.stars === 3 || cfg.points) setTimeout(() => confetti(cfg.points ? 140 : 80), 300);
   scene.showResult((el) => {
     const howTxt = { burst: '버스트 피니시', out: '아웃 피니시', spin: '스핀 피니시', judge: '판정승' }[res.how] || '';
     el.append(h('div.res-title.win.display.stroke', '승리!'), h('div.res-how', howTxt));
@@ -118,7 +119,7 @@ function showLose(scene, cfg, res, coins, done) {
     else if ((p.type === 'atk' && f.type === 'def') || (p.type === 'def' && f.type === 'sta') || (p.type === 'sta' && f.type === 'atk')) tip = `상성이 불리했어. **${TYPES[Object.keys(TYPES).find(k => ({ atk: 'sta', sta: 'def', def: 'atk' })[k] === f.type)]?.name || '다른'} 팽이**로 바꿔 보자!`;
     else tip = `**대시**로 먼저 들이받고, 게이지가 차면 바로 **필살기!**`;
     el.append(h('div.res-tip', { html: rich(tip) }));
-    el.append(h('div.res-rewards', rewardRow('coins', coins)));
+    if (coins) el.append(h('div.res-rewards', rewardRow('coins', coins)));
     el.append(h('div.res-btns',
       btn('돌아가기', 'ghost', () => done('back')),
       btn('강화하러 가기', 'green', () => done('upgrade')),

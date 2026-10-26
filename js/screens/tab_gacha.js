@@ -1,6 +1,6 @@
 // 뽑기 탭: 캡슐 뽑기 (1회 / 10회), 천장 표시, 개봉 연출
 import { h, sleep } from '../core/util.js';
-import { icon, topImg, typeChip, rarChip, starsEl, toast, deny, btn, modal, app } from '../core/ui.js';
+import { icon, topImg, typeChip, rarChip, starsEl, toast, deny, btn, modal, app, confetti } from '../core/ui.js';
 import { Save } from '../core/save.js';
 import { Audio } from '../core/audio.js';
 import { path } from '../core/assets.js';
@@ -76,6 +76,7 @@ async function playOpening(res, machine) {
   cap.classList.add('open');
   Audio.sfx('reveal', { rarity: best });
   ov.classList.add('flash');
+  if (best >= 3) setTimeout(() => confetti(140), 200);
   await sleep(450);
   cap.remove();
   if (res.length === 1) {

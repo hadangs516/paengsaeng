@@ -100,6 +100,8 @@ export function modal({ title, color = '', body, buttons = [], closable = false,
   };
   for (const b of buttons) {
     const btn = h('button.btn' + (b.cls ? '.' + b.cls.split(' ').join('.') : ''), { onclick: async () => {
+      if (wrap._closed || wrap._busy) return;
+      wrap._busy = true; setTimeout(() => { wrap._busy = false; }, 350);
       Audio.sfx('click');
       if (b.onClick) { const r = await b.onClick(btn, close); if (r === false) return; }
       close(b.value);
@@ -204,3 +206,35 @@ export function backBtn(onClick) {
 }
 
 export { sleep };
+
+// 꽃가루 연출 (큰 순간에만)
+export function confetti(amount = 90, colors = ['#ffd23f', '#ff5468', '#4cb0ff', '#4fe07a', '#b36bff', '#ffffff']) {
+  const root = app();
+  const cv = document.createElement('canvas');
+  const r = root.getBoundingClientRect();
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = r.width * dpr; cv.height = r.height * dpr;
+  Object.assign(cv.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', zIndex: 75, pointerEvents: 'none' });
+  root.append(cv);
+  const g = cv.getContext('2d');
+  g.scale(dpr, dpr);
+  const ps = Array.from({ length: amount }, (_, i) => ({
+    x: r.width * (0.5 + (Math.random() - 0.5) * 0.3), y: r.height * 0.35,
+    vx: (Math.random() - 0.5) * 900, vy: -300 - Math.random() * 700,
+    w: 6 + Math.random() * 7, h: 9 + Math.random() * 9, a: Math.random() * 6, va: (Math.random() - 0.5) * 18,
+    c: colors[i % colors.length],
+  }));
+  let last = performance.now(), t = 0;
+  const step = (now) => {
+    const dt = Math.min(0.04, (now - last) / 1000); last = now; t += dt;
+    g.clearRect(0, 0, r.width, r.height);
+    for (const p of ps) {
+      p.vy += 1100 * dt; p.vx *= 0.985; p.x += p.vx * dt; p.y += p.vy * dt; p.a += p.va * dt;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.a); g.scale(1, Math.cos(p.a * 1.7));
+      g.globalAlpha = Math.max(0, 1 - Math.max(0, t - 1.6));
+      g.fillStyle = p.c; g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); g.restore();
+    }
+    if (t < 2.6) requestAnimationFrame(step); else cv.remove();
+  };
+  requestAnimationFrame(step);
+}

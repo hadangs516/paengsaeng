@@ -213,6 +213,8 @@ async function afterEnter(params, bar) {
       toast(txt, 'good');
     }
   }
+  // 엔딩을 못 보고 꺼졌으면 다시 보여준다
+  if (st.flags.ending && !st.flags.endingSeen) { setTimeout(() => go('adventure', {}, 'fade'), 300); return; }
   // 홈 화면에 추가 안내 (한 번만, 지원 브라우저만)
   if (params.fromTutorial && window.__installPrompt && !st.flags.installAsked) {
     st.flags.installAsked = true;

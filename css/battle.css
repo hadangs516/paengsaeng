@@ -108,7 +108,7 @@ body.pc .bbtn .key { display: block; }
 .battle.wide .btip { top: 18px; }
 
 .vs { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px 14px; background: linear-gradient(180deg, rgba(5,8,26,.55), rgba(5,8,26,.88)); animation: fadeIn .3s ease; }
-.vs.out { animation: fadeOut .3s ease both; }
+.vs.out { animation: fadeOut .3s ease both; pointer-events: none !important; }
 .vs-title { font-size: 30px; color: #fff; text-align: center; }
 .vs-kind { padding: 6px 14px; border-radius: 10px; background: rgba(255,210,63,.15); border: 2px solid rgba(255,210,63,.5); font: 800 14px/1 var(--f-body); color: var(--yellow); }
 .vs-row { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; max-width: 640px; }
